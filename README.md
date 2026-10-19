@@ -290,5 +290,4 @@ Namun, penggunaan FreshRSS secara mandiri membutuhkan pemahaman mengenai konfigu
 | 1 | M0403241100 | Muflichah Widi Wulandari |
 | 2 | M0403241070 | Fatimah Puspa Jani |
 | 3 | M0403241141 | Rendi Ramadana |
-| 4 | M0403241047 | Azahra Salsabila |
-| 5 | M0403241031 | Muh Abdillah Mukhlis |
+| 4 | M0403241031 | Muh Abdillah Mukhlis |
