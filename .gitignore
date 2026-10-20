@@ -1,0 +1,10 @@
+# VS Code
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Docker / Environment local
+.env
+*.log
