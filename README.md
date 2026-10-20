@@ -1,5 +1,20 @@
+<h1 align="center">
+  <img src="https://freshrss.github.io/FreshRSS/en/img/logo_freshrss.png" alt="FreshRSS Logo">
+</h1>
+
+[Sekilas Tentang](#sekilas-tentang) | [Instalasi](#instalasi) | [Konfigurasi](#konfigurasi) | [Maintenance](#maintenance) | [Otomatisasi](#otomatisasi) | [Cara Pemakaian](#cara-pemakaian) | [Pembahasan](#pembahasan) | [Referensi](#referensi)
+:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
 
 # FreshRSS
+
+## Identitas Kelompok
+
+| No. | NIM | Nama |
+|:---:|---|---|
+| 1 | M0403241100 | Muflichah Widi Wulandari |
+| 2 | M0403241070 | Fatimah Puspa Jani |
+| 3 | M0403241141 | Rendi Ramadana |
+| 4 | M0403241031 | Muh Abdillah Mukhlis |
 
 ## Sekilas Tentang
 
@@ -9,96 +24,181 @@ Dengan menggunakan FreshRSS, pengguna tidak perlu membuka setiap situs secara te
 
 Dalam proyek ini, FreshRSS dipilih sebagai aplikasi web yang diimplementasikan untuk memenuhi tugas mata kuliah Komunikasi Data dan Jaringan. Instalasi dilakukan pada lingkungan virtual menggunakan Ubuntu sebagai sistem operasi server, Apache sebagai *web server*, PHP sebagai lingkungan pemrosesan aplikasi, serta MySQL sebagai basis data.
 
-Pengujian awal dilakukan dengan menjalankan FreshRSS melalui browser pada lingkungan lokal. Aplikasi kemudian digunakan untuk menambahkan umpan RSS BBC News World sehingga artikel berita dapat ditampilkan dan dibaca melalui antarmuka FreshRSS. Tahap selanjutnya mencakup penyelesaian dokumentasi, pemilihan layanan hosting gratis, dan pengujian akses aplikasi melalui jaringan internet.
-
-
+Pengujian dilakukan secara langsung pada VPS Hostinger dengan mengakses FreshRSS melalui browser menggunakan domain yang telah dikonfigurasi. Aplikasi kemudian diuji dengan menambahkan umpan RSS BBC News World untuk memastikan artikel berita dapat ditampilkan dan dibaca melalui antarmuka FreshRSS. Tahap selanjutnya meliputi penyelesaian dokumentasi, pemeriksaan konfigurasi hosting, serta pengujian akses aplikasi melalui jaringan internet.
 
 ## Instalasi
 
 ### Prasyarat
 
-Sebelum melakukan instalasi FreshRSS, diperlukan beberapa perangkat lunak dan komponen pendukung agar aplikasi dapat berjalan dengan baik. Pada proyek ini, instalasi dilakukan menggunakan lingkungan virtual dengan spesifikasi sebagai berikut.
+Sebelum melakukan instalasi FreshRSS, diperlukan beberapa perangkat lunak dan komponen pendukung agar aplikasi dapat berjalan dengan baik. Pada proyek ini, instalasi dilakukan dengan spesifikasi sebagai berikut.
 
-- **Sistem Operasi:** Ubuntu 26.04 LTS
-- **Virtualisasi:** Oracle VirtualBox
+- **Sistem Operasi:** VPS dengan sistem operasi Ubuntu 26.04 LTS (kami menggunakan VPS Hostinger)
+- **Akses SSH** untuk mengelola server.
+- **Domain** (opsional, domain kami w1d1.tech)
 - **Web Server:** Apache2
 - **Bahasa Pemrograman:** PHP
 - **Basis Data:** MySQL
 - **Version Control:** Git
 - **Browser:** Google Chrome
+- Certbot untuk mengaktifkan HTTPS menggunakan Let's Encrypt (opsional, tetapi disarankan).
 
 FreshRSS membutuhkan web server dan PHP beserta ekstensi pendukungnya. MySQL digunakan sebagai basis data untuk menyimpan konfigurasi pengguna dan artikel yang dikelola aplikasi. Persyaratan resmi FreshRSS juga mencakup PHP 8.1 atau lebih baru serta dukungan ekstensi seperti cURL, DOM, JSON, XML, dan PDO untuk basis data. [1]
 
 ### Langkah Instalasi
 
-#### 1. Memperbarui Paket Sistem
+#### 1. Memperbarui Sistem
 
-Langkah pertama dilakukan dengan memperbarui daftar paket dan memasang pembaruan sistem Ubuntu menggunakan perintah berikut.
+Hubungkan ke VPS melalui SSH menggunakan terminal. Pada komputer Windows, koneksi dapat dilakukan melalui PowerShell atau Windows Terminal.
+
+```bash
+ssh root@IP_VPS
+```
+
+Ganti `IP_VPS` dengan alamat IP VPS yang digunakan. Setelah berhasil masuk, perbarui daftar paket dan sistem.
 
 ```bash
 sudo apt update
-sudo apt upgrade
+sudo apt upgrade -y
 ```
 
-#### 2. Memasang Apache dan Git
+#### 2. Menginstal Apache, PHP, MySQL, dan Git
 
-Apache digunakan untuk melayani permintaan HTTP dari browser, sedangkan Git digunakan untuk mengambil kode sumber FreshRSS dari repositori resminya.
+Instal paket yang diperlukan untuk menjalankan FreshRSS.
 
 ```bash
-sudo apt install apache2 git
+sudo apt install -y apache2 mysql-server git \
+php php-cli php-mysql php-curl php-gd \
+php-mbstring php-xml php-zip php-intl
 ```
 
-Setelah proses instalasi selesai, status layanan Apache dapat diperiksa menggunakan perintah berikut.
+Aktifkan Apache dan MySQL agar berjalan secara otomatis ketika server dinyalakan.
+
+```bash
+sudo systemctl enable --now apache2
+sudo systemctl enable --now mysql
+```
+
+Periksa status kedua layanan.
 
 ```bash
 sudo systemctl status apache2
+sudo systemctl status mysql
 ```
 
-#### 3. Memasang PHP dan Ekstensi Pendukung
+#### 3. Mengunduh FreshRSS
 
-FreshRSS membutuhkan PHP untuk menjalankan kode aplikasi pada server. Beberapa ekstensi PHP juga diperlukan agar aplikasi dapat memproses permintaan HTTP, mengelola data, dan berinteraksi dengan basis data.
+Masuk ke direktori web Apache dan unduh kode sumber FreshRSS dari repositori resminya.
 
 ```bash
-sudo apt install php libapache2-mod-php php-curl php-MySQL3 php-xml php-mbstring
+cd /var/www/html
+sudo git clone https://github.com/FreshRSS/FreshRSS.git freshrss
 ```
 
-#### 4. Mengaktifkan Modul Apache
-
-Modul `rewrite` diaktifkan untuk mendukung aturan penulisan ulang URL yang digunakan oleh aplikasi.
+Atur kepemilikan direktori agar Apache dapat mengakses berkas aplikasi.
 
 ```bash
-sudo a2enmod rewrite
-sudo systemctl restart apache2
+sudo chown -R www-data:www-data /var/www/html/freshrss
 ```
 
-#### 5. Mengunduh FreshRSS
+#### 4. Membuat Database MySQL
 
-Kode sumber FreshRSS diambil dari repositori resmi menggunakan Git. Pada implementasi ini, aplikasi ditempatkan pada direktori `/var/www/FreshRSS`.
+Masuk ke MySQL sebagai administrator.
 
 ```bash
-cd /var/www
-sudo git clone https://github.com/FreshRSS/FreshRSS.git
+sudo mysql
 ```
 
-#### 6. Mengatur Izin Direktori
+Buat database dan pengguna khusus untuk FreshRSS. Ganti `PASSWORD` dengan kata sandi yang aman.
 
-Direktori aplikasi perlu memiliki izin yang sesuai agar Apache dapat mengakses aplikasi dan menyimpan data yang diperlukan. FreshRSS secara khusus memerlukan direktori `data` yang dapat ditulisi oleh proses web server.
+```sql
+CREATE DATABASE freshrss
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+CREATE USER 'freshrss_user'@'localhost'
+IDENTIFIED BY 'PASSWORD';
+
+GRANT ALL PRIVILEGES ON freshrss.*
+TO 'freshrss_user'@'localhost';
+
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+Database `freshrss` digunakan untuk menyimpan data aplikasi yang didukung oleh konfigurasi database FreshRSS. Kredensial database selanjutnya dimasukkan pada proses instalasi melalui browser.
+
+#### 5. Mengatur Hak Akses dan Konfigurasi Web Server
+
+Pastikan direktori aplikasi dapat dibaca oleh Apache.
 
 ```bash
-sudo chown -R www-data:www-data /var/www/FreshRSS
+sudo chown -R www-data:www-data /var/www/html/freshrss
 ```
+
+Aktifkan modul Apache yang diperlukan.
+
+```bash
+sudo a2enmod rewrite headers expires
+sudo systemctl reload apache2
+```
+
+Pastikan domain sudah diarahkan ke IP VPS melalui DNS. Jika menggunakan domain `w1d1.tech`, periksa bahwa record DNS mengarah ke alamat IP VPS yang benar.
+
+Jika konfigurasi virtual host belum tersedia, buat berkas konfigurasi Apache.
+
+```bash
+sudo nano /etc/apache2/sites-available/freshrss.conf
+```
+
+Masukkan konfigurasi berikut.
+
+```apache
+<VirtualHost *:80>
+    ServerName w1d1.tech
+    ServerAlias www.w1d1.tech
+
+    DocumentRoot /var/www/html
+
+    <Directory /var/www/html/freshrss>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/freshrss-error.log
+    CustomLog ${APACHE_LOG_DIR}/freshrss-access.log combined
+</VirtualHost>
+```
+
+Aktifkan konfigurasi dan periksa sintaks Apache.
+
+```bash
+sudo a2ensite freshrss.conf
+sudo apache2ctl configtest
+sudo systemctl reload apache2
+```
+
+#### 6. Mengatur HTTPS
+
+HTTPS digunakan untuk mengenkripsi komunikasi antara browser dan server. Pastikan domain telah mengarah ke VPS dan port 80 dapat diakses dari internet sebelum menjalankan Certbot.
+
+Instal Certbot dan plugin Apache.
+
+```bash
+sudo apt install -y certbot python3-certbot-apache
+```
+
+Jalankan perintah berikut untuk memperoleh sertifikat SSL.
+
+```bash
+sudo certbot --apache -d w1d1.tech -d www.w1d1.tech
+```
+
+Ikuti petunjuk yang ditampilkan sampai proses selesai. Pastikan port 443 diizinkan pada firewall VPS dan firewall Hostinger.
 
 #### 7. Menyelesaikan Instalasi melalui Browser
 
-Setelah persiapan server selesai, FreshRSS diakses melalui browser untuk menyelesaikan konfigurasi awal. Pada tahap ini, pengguna memilih MySQL sebagai basis data, kemudian membuat akun administrator dan menyelesaikan proses instalasi sesuai petunjuk yang tersedia pada antarmuka aplikasi.
-
-Pada lingkungan VirtualBox yang digunakan dalam proyek ini, akses lokal dilakukan melalui alamat berikut:
-
-```text
-http://127.0.0.1:8080/FreshRSS/
-```
-
-Alamat tersebut digunakan untuk mengakses aplikasi melalui port forwarding VirtualBox yang telah dikonfigurasi pada komputer host.
+Setelah persiapan server selesai, FreshRSS diakses melalui browser lewat alamat [https://w1d1.tech/freshrss](https://w1d1.tech/freshrss) untuk menyelesaikan konfigurasi awal. Pada tahap ini, pengguna memilih MySQL sebagai basis data, kemudian membuat akun administrator dan menyelesaikan proses instalasi sesuai petunjuk yang tersedia pada antarmuka aplikasi.
 
   - Pilih bahasa yang akan digunakan
 
@@ -139,12 +239,35 @@ Berdasarkan dokumentasi resmi FreshRSS, direktori `p/` digunakan sebagai direkto
 
 Pada implementasi ini, konfigurasi Apache perlu disesuaikan agar hanya direktori publik FreshRSS yang dapat diakses melalui browser. Setelah perubahan diterapkan, pengujian dilakukan untuk memastikan aplikasi tetap berjalan dan direktori sensitif tidak dapat diakses secara langsung.
 
-### Konfigurasi Basis Data
+### Konfigurasi Database
 
-FreshRSS menggunakan MySQL sebagai basis data pada implementasi ini. MySQL dipilih karena tidak memerlukan server basis data terpisah sehingga konfigurasi awal lebih sederhana. Data aplikasi dikelola oleh FreshRSS dan disimpan pada direktori data sesuai konfigurasi instalasi.
+FreshRSS menggunakan MySQL sebagai database pada proyek ini. Penggunaan database terpisah memungkinkan data aplikasi dikelola melalui layanan database server.
 
+Informasi konfigurasi database yang digunakan:
 
+- **Nama database:** `freshrss`
+- **Username database:** `freshrss_user`
+- **Host database:** `localhost`
+- **Jenis database:** MySQL
 
+Password database disimpan sebagai informasi konfigurasi dan tidak dicantumkan dalam dokumentasi publik.
+
+### Konfigurasi PHP
+
+PHP digunakan untuk menjalankan kode aplikasi FreshRSS. Ekstensi PHP seperti `php-curl`, `php-xml`, `php-mbstring`, `php-gd`, dan `php-zip` membantu mendukung kebutuhan aplikasi.
+
+Konfigurasi PHP dapat diperiksa melalui terminal.
+
+```bash
+php -v
+php -m
+```
+
+### Konfigurasi Domain dan HTTPS
+
+Domain `w1d1.tech` digunakan sebagai alamat akses aplikasi. HTTPS diaktifkan menggunakan sertifikat SSL agar koneksi antara pengguna dan server lebih aman.
+
+Pastikan DNS domain, konfigurasi Apache, serta aturan firewall VPS sesuai dengan kebutuhan akses web.
 
 ## Maintenance
 
@@ -152,7 +275,21 @@ Maintenance dilakukan untuk menjaga kestabilan aplikasi dan mencegah kehilangan 
 
 ### 1. Backup Data
 
-Pencadangan dilakukan untuk menjaga data pengguna, konfigurasi, dan basis data agar dapat dipulihkan apabila terjadi kerusakan atau kesalahan konfigurasi. Pada instalasi FreshRSS, direktori `data/` merupakan bagian utama yang perlu dicadangkan. Direktori `extensions/` juga perlu disertakan apabila menggunakan ekstensi tambahan.
+Pencadangan dilakukan untuk menjaga data pengguna, konfigurasi, dan basis data agar dapat dipulihkan apabila terjadi kerusakan atau kesalahan konfigurasi.
+
+Jalankan perintah berikut untuk membuat cadangan database MySQL.
+
+```bash
+sudo mysqldump freshrss > "$HOME/freshrss-backup.sql"
+```
+
+Perintah tersebut membuat berkas cadangan SQL pada direktori home pengguna yang menjalankan perintah. Pastikan lokasi penyimpanan memiliki ruang yang cukup dan file backup dipindahkan ke lokasi aman di luar VPS.
+
+Untuk pemulihan database, gunakan akun MySQL yang memiliki hak akses sesuai kebutuhan.
+
+```bash
+mysql -u freshrss_user -p freshrss < freshrss-backup.sql
+```
 
 Sebelum melakukan pembaruan aplikasi, pencadangan sebaiknya dilakukan terlebih dahulu. Dengan demikian, data yang telah tersimpan dapat dipulihkan apabila proses pembaruan mengalami kendala.
 
@@ -237,8 +374,6 @@ Setelah umpan RSS ditambahkan, FreshRSS mengambil artikel yang tersedia dan mena
 
 ![Daftar artikel BBC News](screenshot/fitur-5.png)
 
-> **Catatan:** Ganti gambar di atas dengan screenshot daftar artikel yang tampil pada FreshRSS setelah deployment.
-
 ### 4. Hasil Pengujian
 
 Pengujian dilakukan untuk memastikan bahwa aplikasi dapat diakses, pengguna dapat masuk, umpan RSS dapat ditambahkan, dan artikel dapat ditampilkan dengan benar.
@@ -301,11 +436,3 @@ Namun, penggunaan FreshRSS secara mandiri membutuhkan pemahaman mengenai konfigu
 
 5. Feedly. (n.d.). *Feedly*. https://feedly.com/
 
-## Identitas Kelompok
-
-| No. | NIM | Nama |
-|:---:|---|---|
-| 1 | M0403241100 | Muflichah Widi Wulandari |
-| 2 | M0403241070 | Fatimah Puspa Jani |
-| 3 | M0403241141 | Rendi Ramadana |
-| 4 | M0403241031 | Muh Abdillah Mukhlis |
