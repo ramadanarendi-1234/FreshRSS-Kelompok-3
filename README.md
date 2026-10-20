@@ -7,7 +7,7 @@ FreshRSS merupakan aplikasi web *feed reader* berbasis sumber terbuka (*open-sou
 
 Dengan menggunakan FreshRSS, pengguna tidak perlu membuka setiap situs secara terpisah untuk mengetahui berita atau artikel terbaru. Pengguna cukup menambahkan alamat RSS dari situs yang diinginkan, kemudian membaca berbagai pembaruan tersebut melalui satu antarmuka aplikasi.
 
-Dalam proyek ini, FreshRSS dipilih sebagai aplikasi web yang diimplementasikan untuk memenuhi tugas mata kuliah Komunikasi Data dan Jaringan. Instalasi dilakukan pada lingkungan virtual menggunakan Ubuntu sebagai sistem operasi server, Apache sebagai *web server*, PHP sebagai lingkungan pemrosesan aplikasi, serta SQLite sebagai basis data.
+Dalam proyek ini, FreshRSS dipilih sebagai aplikasi web yang diimplementasikan untuk memenuhi tugas mata kuliah Komunikasi Data dan Jaringan. Instalasi dilakukan pada lingkungan virtual menggunakan Ubuntu sebagai sistem operasi server, Apache sebagai *web server*, PHP sebagai lingkungan pemrosesan aplikasi, serta MySQL sebagai basis data.
 
 Pengujian awal dilakukan dengan menjalankan FreshRSS melalui browser pada lingkungan lokal. Aplikasi kemudian digunakan untuk menambahkan umpan RSS BBC News World sehingga artikel berita dapat ditampilkan dan dibaca melalui antarmuka FreshRSS. Tahap selanjutnya mencakup penyelesaian dokumentasi, pemilihan layanan hosting gratis, dan pengujian akses aplikasi melalui jaringan internet.
 
@@ -23,11 +23,11 @@ Sebelum melakukan instalasi FreshRSS, diperlukan beberapa perangkat lunak dan ko
 - **Virtualisasi:** Oracle VirtualBox
 - **Web Server:** Apache2
 - **Bahasa Pemrograman:** PHP
-- **Basis Data:** SQLite
+- **Basis Data:** MySQL
 - **Version Control:** Git
 - **Browser:** Google Chrome
 
-FreshRSS membutuhkan web server dan PHP beserta ekstensi pendukungnya. SQLite digunakan sebagai basis data untuk menyimpan konfigurasi pengguna dan artikel yang dikelola aplikasi. Persyaratan resmi FreshRSS juga mencakup PHP 8.1 atau lebih baru serta dukungan ekstensi seperti cURL, DOM, JSON, XML, dan PDO untuk basis data. [1]
+FreshRSS membutuhkan web server dan PHP beserta ekstensi pendukungnya. MySQL digunakan sebagai basis data untuk menyimpan konfigurasi pengguna dan artikel yang dikelola aplikasi. Persyaratan resmi FreshRSS juga mencakup PHP 8.1 atau lebih baru serta dukungan ekstensi seperti cURL, DOM, JSON, XML, dan PDO untuk basis data. [1]
 
 ### Langkah Instalasi
 
@@ -59,7 +59,7 @@ sudo systemctl status apache2
 FreshRSS membutuhkan PHP untuk menjalankan kode aplikasi pada server. Beberapa ekstensi PHP juga diperlukan agar aplikasi dapat memproses permintaan HTTP, mengelola data, dan berinteraksi dengan basis data.
 
 ```bash
-sudo apt install php libapache2-mod-php php-curl php-sqlite3 php-xml php-mbstring
+sudo apt install php libapache2-mod-php php-curl php-MySQL3 php-xml php-mbstring
 ```
 
 #### 4. Mengaktifkan Modul Apache
@@ -90,7 +90,7 @@ sudo chown -R www-data:www-data /var/www/FreshRSS
 
 #### 7. Menyelesaikan Instalasi melalui Browser
 
-Setelah persiapan server selesai, FreshRSS diakses melalui browser untuk menyelesaikan konfigurasi awal. Pada tahap ini, pengguna memilih SQLite sebagai basis data, kemudian membuat akun administrator dan menyelesaikan proses instalasi sesuai petunjuk yang tersedia pada antarmuka aplikasi.
+Setelah persiapan server selesai, FreshRSS diakses melalui browser untuk menyelesaikan konfigurasi awal. Pada tahap ini, pengguna memilih MySQL sebagai basis data, kemudian membuat akun administrator dan menyelesaikan proses instalasi sesuai petunjuk yang tersedia pada antarmuka aplikasi.
 
 Pada lingkungan VirtualBox yang digunakan dalam proyek ini, akses lokal dilakukan melalui alamat berikut:
 
@@ -100,6 +100,26 @@ http://127.0.0.1:8080/FreshRSS/
 
 Alamat tersebut digunakan untuk mengakses aplikasi melalui port forwarding VirtualBox yang telah dikonfigurasi pada komputer host.
 
+  - Pilih bahasa yang akan digunakan
+
+    ![Pilih bahasa instalasi FreshRSS](screenshot/installation-1.png)
+
+  - Cek instalasi PHP
+
+    ![Instalasi php](screenshot/installation-2.png)
+
+  - Konfigurasi database
+
+    ![Konfigurasi database](screenshot/installation-6.png)
+
+  - Membuat username dan password
+
+    ![Membuat username dan password](screenshot/installation-4.png)
+
+  - Selesaikan proses instalasi
+
+    ![Selesai](screenshot/installation-5.png)
+ 
 #### 8. Menguji Aplikasi
 
 Pengujian awal dilakukan dengan membuka halaman utama FreshRSS melalui browser. Setelah berhasil masuk, umpan RSS BBC News World ditambahkan untuk memastikan aplikasi dapat mengambil dan menampilkan artikel dari sumber berita eksternal.
@@ -121,7 +141,7 @@ Pada implementasi ini, konfigurasi Apache perlu disesuaikan agar hanya direktori
 
 ### Konfigurasi Basis Data
 
-FreshRSS menggunakan SQLite sebagai basis data pada implementasi ini. SQLite dipilih karena tidak memerlukan server basis data terpisah sehingga konfigurasi awal lebih sederhana. Data aplikasi dikelola oleh FreshRSS dan disimpan pada direktori data sesuai konfigurasi instalasi.
+FreshRSS menggunakan MySQL sebagai basis data pada implementasi ini. MySQL dipilih karena tidak memerlukan server basis data terpisah sehingga konfigurasi awal lebih sederhana. Data aplikasi dikelola oleh FreshRSS dan disimpan pada direktori data sesuai konfigurasi instalasi.
 
 
 
@@ -185,15 +205,15 @@ FreshRSS digunakan untuk mengumpulkan dan membaca artikel dari berbagai situs we
 
 FreshRSS dapat diakses melalui browser menggunakan alamat hosting yang telah dikonfigurasi.
 
-**Alamat aplikasi:** `[GANTI DENGAN URL HOSTING FRESHRSS SETELAH DEPLOYMENT BERHASIL]`
+**Alamat aplikasi:** [https://w1d1.tech/freshrss](https://w1d1.tech/freshrss)
 
-> **Catatan:** Ganti keterangan alamat di atas dengan URL publik FreshRSS setelah proses deployment selesai dan akses melalui internet berhasil diuji.
+**Tampilan halaman Login FreshRSS:**
+
+![Halaman login FreshRSS](screenshot/fitur-1.png)
 
 **Tampilan halaman utama FreshRSS:**
 
-![Halaman utama FreshRSS](screenshots/halaman-utama.png)
-
-> **Catatan:** Ganti gambar di atas dengan screenshot halaman utama FreshRSS setelah diakses melalui hosting.
+![Halaman utama FreshRSS](screenshot/fitur-2.png)
 
 ### 2. Menambahkan Umpan RSS
 
@@ -202,14 +222,12 @@ Pengguna dapat menambahkan sumber berita melalui menu pengelolaan langganan (*Su
 Pada pengujian aplikasi, BBC News World digunakan sebagai contoh sumber berita dengan informasi berikut.
 
 - **Nama sumber:** BBC News World
-- **URL RSS:** `https://feeds.bbci.co.uk/news/world/rss.xml`
-- **Situs web:** `https://www.bbc.co.uk/news/world`
+- **URL RSS:** `https://feeds.bbci.co.uk/news/rss.xml`
+- **Situs web:** `https://www.bbc.co.uk/news`
 
 **Tampilan konfigurasi umpan RSS:**
 
-![Konfigurasi feed BBC News World](screenshots/feed-bbc-news.png)
-
-> **Catatan:** Ganti gambar di atas dengan screenshot konfigurasi feed pada aplikasi yang telah di-deploy.
+![Konfigurasi feed BBC News World](screenshot/fitur-4.png)
 
 ### 3. Membaca Artikel
 
@@ -217,7 +235,7 @@ Setelah umpan RSS ditambahkan, FreshRSS mengambil artikel yang tersedia dan mena
 
 **Tampilan daftar artikel:**
 
-![Daftar artikel BBC News World](screenshots/artikel-bbc-news.png)
+![Daftar artikel BBC News](screenshot/fitur-5.png)
 
 > **Catatan:** Ganti gambar di atas dengan screenshot daftar artikel yang tampil pada FreshRSS setelah deployment.
 
