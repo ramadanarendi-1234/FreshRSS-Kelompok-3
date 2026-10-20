@@ -416,6 +416,8 @@ FreshRSS dibandingkan dengan Feedly sebagai aplikasi sejenis yang digunakan untu
 | Pengelolaan server | Pengguna mengelola server sendiri jika di-*self-host* | Infrastruktur dikelola penyedia |
 | Kendali data | Lebih besar ketika menggunakan server sendiri | Mengikuti kebijakan dan sistem layanan Feedly |
 | Pemeliharaan | Pengguna bertanggung jawab atas server dan pembaruan | Sebagian besar pemeliharaan infrastruktur dilakukan penyedia |
+| Kustomisasi | Mendukung tema, ekstensi, dan konfigurasi sesuai kemampuan aplikasi | Fitur yang tersedia mengikuti layanan dan paket Feedly |
+| Kesesuaian penggunaan | Cocok untuk kendali server dan pembelajaran teknis | Cocok untuk kemudahan pengguna tanpa mengelola server | 
 
 ### 4. Kesimpulan Pembahasan
 
